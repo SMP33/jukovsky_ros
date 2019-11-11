@@ -1,0 +1,25 @@
+<launch>
+
+	<node name="rplidarNode"          pkg="rplidar_ros"  type="rplidarNode" required="true" >
+		<param name="serial_port"         type="string" value="/dev/custom/RPLidar"/>
+		<param name="serial_baudrate"     type="int"    value="115200"/><!--A1/A2 -->
+		<param name="frame_id"            type="string" value="laser"/>
+		<param name="inverted"            type="bool"   value="false"/>
+		<param name="angle_compensate"    type="bool"   value="true"/>
+	</node>
+
+	<node pkg="jukovsky_ros" name="aruco_home_estimator" type="aruco_home_estimator" output = "screen" required="true" />
+	<node pkg="jukovsky_ros" name="dji_controller" type="dji_controller" output = "screen" required="true" />
+	<node pkg="jukovsky_ros" name="EmlidPub" type="EmlidPub" output = "screen" required="true" />
+	
+	<node pkg="jukovsky_ros" name="logger" type="logger" output = "screen" required="true" >
+	    <param name="port" value="20050" type="int"/>
+	</node>
+	
+	<node pkg="jukovsky_ros" name="navigation_control" type="navigation_control" output = "screen" required="true" >
+		<param name="enable_emlid" value="1" type="int"/>
+		<param name="navigation_telem" value="1" type="int"/>
+		<param name="safe_alt" value="20" type="int"/>
+	</node>
+	
+</launch>

@@ -1,0 +1,11 @@
+float64 lat
+float64 lng
+float64 alt
+float64 x
+float64 y
+float64 z
+float64 course
+float64 dist_to_target
+float64 stable_time
+string debug
+uint8 paused

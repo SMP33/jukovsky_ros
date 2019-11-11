@@ -8,8 +8,11 @@
 		<param name="angle_compensate"    type="bool"   value="true"/>
 	</node>
 
+	<node pkg="jukovsky_ros" name="dji_controller" type="dji_controller" output = "screen" required="true" >
+		<param name="usr_config_path" type="string" value="/home/pi/UserConfig.txt"/>
+	</node>
+
 	<node pkg="jukovsky_ros" name="aruco_home_estimator" type="aruco_home_estimator" output = "screen" required="true" />
-	<node pkg="jukovsky_ros" name="dji_controller" type="dji_controller" output = "screen" required="true" />
 	<node pkg="jukovsky_ros" name="EmlidPub" type="EmlidPub" output = "screen" required="true" />
 	
 	<node pkg="jukovsky_ros" name="logger" type="logger" output = "screen" required="true" >

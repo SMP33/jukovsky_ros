@@ -18,7 +18,18 @@
 #include "gimbal/dji_gimbal.h"
 #include "../include/ArgParser.h"
 
-#define c(color,str)  "\x1B["<<color<<"m" << str << "\033[0m" 
+#define c(color,str)  "\x1B["<<color<<"m" << str << "\033[0m"
+#define cyan_b(str)   "\x1B[46;1m" << str << "\033[0m" 
+#define gray_b(str)   "\x1B[40m" << str << "\033[0m" 
+#define red_b(str)   "\x1B[41;1m" << str << "\033[0m" 
+#define green_b(str)   "\x1B[42;1m" << str << "\033[0m" 
+
+
+#define grn(str)  "\x1B[32;1m" << str << "\x1B[39m" 
+#define mgt(str)  "\x1B[35;1m" << str << "\x1B[39m" 
+#define red(str)  "\x1B[31;1m" << str << "\x1B[39m" 
+
+#define CLEAR(rows)               printf("\033[%02dA\033[0J",rows+1)
 
 
 //#define DEBUG_ROS
@@ -339,6 +350,7 @@ void update_data() //обновление телеметрии с A3
 }
 int main(int argc, char *argv[])
 {
+	ros::init(argc, argv, "JUK_DJI_CORE_NODE");
 	
 	DJI::OSDK::Log::instance().disableDebugLogging();
 	
@@ -359,23 +371,36 @@ int main(int argc, char *argv[])
 	
 	usleep(1000000);
 	
-	/*
-	 *дичайший костыль, SDK считывает id приложения и ключ из файла,
-	 *чтобы не таскать его с собой каждый раз, файл создается каждый раз при запуске программы
-	 *это дико небезопасно и возможно нарушает условия политики использования, учитывая, что все это добро хранится на гитхабе, надо переделать
-	 **/
-	std::string UserConfig_data = 
-"app_id : 1067610\n"
-"app_key : b52ab8fdd2d5dd0cce798171cb3581355ab8f64df5d8b4f5d64b87fa0fce0296\n"
-"device : /dev/custom/DJI_CONTROLLER\n"
-"baudrate : 230400\n";
+	string usr_config_path;
+	
+	std::string key;
+	if (ros::param::search("usr_config_path", key))
+	{
+		ros::param::get(key, usr_config_path);
+	}
+	else
+		exit(-1);
+	
+	ifstream UserConfig_file_in(usr_config_path);
+	std::string line;
+	std::string UserConfig_data;
+	
+	while (UserConfig_file_in) {
+		std::getline(UserConfig_file_in, line);
+		UserConfig_data = UserConfig_data +"\n"+ line;
+	}
+	UserConfig_file_in.close();
+	
+	cout << grn(UserConfig_data) << endl;
+	
+	cout << mgt(usr_config_path) << endl << mgt(argv[0]) << endl;
 	std::ofstream UserConfig_file("UserConfig.txt");
 	
 	UserConfig_file << UserConfig_data;
 	
 	UserConfig_file.close();
 
-	ros::init(argc, argv, "JUK_DJI_CORE_NODE");
+	
 	ros::NodeHandle nh;
 	last_ctrl_update_time = ros::Time::now();
 	ros::Publisher pub_GPS = nh.advertise<jukovsky_ros::juk_dji_gps_msg>("JUK/DJI/GPS", 1);

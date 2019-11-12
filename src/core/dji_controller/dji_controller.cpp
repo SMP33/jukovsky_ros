@@ -385,15 +385,17 @@ int main(int argc, char *argv[])
 	std::string line;
 	std::string UserConfig_data;
 	
+	cout << grn("SDK configuration data is:") << endl;
+	
 	while (UserConfig_file_in) {
 		std::getline(UserConfig_file_in, line);
-		UserConfig_data = UserConfig_data +"\n"+ line;
+		UserConfig_data = UserConfig_data + line + "\n";
+		cout << mgt("\t"+line)<<endl;
 	}
 	UserConfig_file_in.close();
 	
-	cout << grn(UserConfig_data) << endl;
 	
-	cout << mgt(usr_config_path) << endl << mgt(argv[0]) << endl;
+	
 	std::ofstream UserConfig_file("UserConfig.txt");
 	
 	UserConfig_file << UserConfig_data;

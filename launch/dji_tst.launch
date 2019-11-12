@@ -1,0 +1,5 @@
+<launch>
+	<node pkg="jukovsky_ros" name="dji_controller_tst" type="dji_controller_tst" output = "screen" required="true" >
+		<param name="usr_config_path" type="string" value="/home/pi/UserConfig.txt"/>
+	</node>
+</launch>

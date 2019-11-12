@@ -349,11 +349,10 @@ void update_data() //обновление телеметрии с A3
 	msg_device_status.voltage = data_Bat.voltage;
 }
 int main(int argc, char *argv[])
-{
+{	
 	ros::init(argc, argv, "JUK_DJI_CORE_NODE");
 	
 	DJI::OSDK::Log::instance().disableDebugLogging();
-	
 	DJI::OSDK::Log::instance().disableStatusLogging();
 	DJI::OSDK::Log::instance().enableErrorLogging();
 	//DJI::OSDK::Log::instance().disableErrorLogging();
@@ -372,14 +371,16 @@ int main(int argc, char *argv[])
 	usleep(1000000);
 	
 	string usr_config_path;
-	
 	std::string key;
 	if (ros::param::search("usr_config_path", key))
 	{
 		ros::param::get(key, usr_config_path);
 	}
 	else
+	{
+		cout << red("ERROR: no UserGonfig file path") << endl;
 		exit(-1);
+	}
 	
 	ifstream UserConfig_file_in(usr_config_path);
 	std::string line;
@@ -393,13 +394,8 @@ int main(int argc, char *argv[])
 		cout << mgt("\t"+line)<<endl;
 	}
 	UserConfig_file_in.close();
-	
-	
-	
 	std::ofstream UserConfig_file("UserConfig.txt");
-	
 	UserConfig_file << UserConfig_data;
-	
 	UserConfig_file.close();
 
 	

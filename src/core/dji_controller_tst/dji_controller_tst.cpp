@@ -107,7 +107,7 @@ public:
 	
 	DJI_Controller(Vehicle*   v_);
 	Telemetry data;
-	void upd();
+	void upd(); //Обновляет телеметрию и передает УВ на контроллер
 
 private:
 	Vehicle*   v;
@@ -118,6 +118,7 @@ private:
 		int speed = 800;
 		int break_dist = 300;
 		int dist = need - current;
+		
 		if (abs(dist) < 30) return 0;
 	
 		if (abs(dist) < break_dist) speed = speed / 2;
@@ -127,6 +128,7 @@ private:
 		return -speed;
 	}
 	
+	//Регулирует положение подвеса с помощью управления угловой скоростью
 	void upd_gimbal()
 	{
 		auto gimbal = v->broadcast->getGimbal();
@@ -135,7 +137,7 @@ private:
 		cAngle.pitch = gimbal.pitch * 10;
 		cAngle.yaw   = gimbal.yaw * 10;
 		
-		DJI::OSDK::Gimbal::SpeedData gimbalSpeed;   //скорость, которую необходимо задать подвесу
+		DJI::OSDK::Gimbal::SpeedData gimbalSpeed;   
 		
 		nAngle.yaw = this->data.orientation.x * 10*GeoMath::CONST.RAD2DEG;
 			
@@ -197,19 +199,19 @@ DJI_Controller::DJI_Controller(Vehicle*   v_)
 		0)
 	, current_ctrlData(default_ctrlData)
 {
+	//Выбираем какую информацию от DJI OSDK выводить на экран
 	DJI::OSDK::Log::instance().disableDebugLogging();
 	DJI::OSDK::Log::instance().enableStatusLogging();
 	DJI::OSDK::Log::instance().enableErrorLogging();
 	
+	//Подписываемся на выбранные топики
 	subscribe_dji_topics();
-	
 }
 
 void
 DJI_Controller::upd()
 {
 	auto now = ros::Time::now();
-	
 	auto data_RC =
 		v->subscribe->getValue<DJI::OSDK::Telemetry::TOPIC_RC_FULL_RAW_DATA>();
 	auto data_Bat =
@@ -267,7 +269,7 @@ DJI_Controller::upd()
 										Control::YAW_RATE | Control::STABLE_ENABLE | Control::HORIZONTAL_BODY;
 					v->control->flightCtrl(current_ctrlData);
 					break;
-				case 13: //экстренное торможение
+				case 13: //торможение и удержание точки
 					v->control->emergencyBrake();
 					break;
 				default:
@@ -321,6 +323,9 @@ DJI_Controller::upd()
 	
 }
 
+//В примере от DJI для задания ключа приложения и юзера используется класс LinuxSetup
+//Он требует, чтобы в папке, из который запускается приложение был файл UserConfig.txt
+//Поэтому копируем файл, путь к которому передается в качестве агрумента в текущую папку
 void generate_UserConfig()
 {
 	string usr_config_path;
@@ -373,4 +378,4 @@ int main(int argc, char *argv[])
 	}
 	
 	return 0;
-}
+}                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
